@@ -45,13 +45,24 @@ fn bench_block_allocation(c: &mut Criterion) {
     // The decode-step path: one token appended to an existing sequence. This
     // runs once per sequence per step, so it is the most frequently executed
     // cache operation by a wide margin.
+    //
+    // Batched rather than a plain `iter`: appending unboundedly to one sequence
+    // grows it until the pool is exhausted, which measures the failure path
+    // rather than the steady state. Each batch gets a fresh sequence with room
+    // to grow.
     group.bench_function("append_token", |b| {
-        let mut cache = KvCacheManager::new(65536, 16, false);
-        let seq = orion_core::SequenceId::next();
-        cache.allocate(seq, &vec![1u32; 128]).unwrap();
-        b.iter(|| {
-            cache.append_token(black_box(seq)).unwrap();
-        });
+        b.iter_batched_ref(
+            || {
+                let mut cache = KvCacheManager::new(1024, 16, false);
+                let seq = orion_core::SequenceId::next();
+                cache.allocate(seq, &vec![1u32; 128]).unwrap();
+                (cache, seq)
+            },
+            |(cache, seq)| {
+                cache.append_token(black_box(*seq)).unwrap();
+            },
+            criterion::BatchSize::SmallInput,
+        );
     });
 
     group.finish();

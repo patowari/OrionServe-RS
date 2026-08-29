@@ -103,32 +103,46 @@ pub fn apply_top_k(logits: &mut [f32], k: usize) {
 /// descending probability order until the cumulative mass reaches `p`; the
 /// token that crosses the threshold is kept, so the retained mass is always
 /// at least `p` and the candidate set is never empty.
+///
+/// Only *unmasked* entries are collected and sorted. After top-k over a 128k
+/// vocabulary the vast majority of entries are at [`MASKED`] and contribute
+/// exactly zero probability, so they can never be inside the nucleus; sorting
+/// them was measurable waste. See `docs/performance-journal.md`.
 pub fn apply_top_p(logits: &mut [f32], p: f32) {
     if p >= 1.0 {
         return;
     }
     let probs = softmax(logits);
 
-    // Sort indices by descending probability.
-    let mut order: Vec<usize> = (0..logits.len()).collect();
-    order.sort_unstable_by(|&a, &b| {
-        probs[b]
-            .partial_cmp(&probs[a])
-            .unwrap_or(std::cmp::Ordering::Equal)
-    });
+    // Collect only live candidates. A masked logit has effectively zero
+    // probability, so it can never be inside the nucleus and never needs
+    // sorting.
+    let mut candidates: Vec<(usize, f32)> = probs
+        .iter()
+        .enumerate()
+        .filter(|&(i, &pr)| pr > 0.0 && logits[i] > MASKED)
+        .map(|(i, &pr)| (i, pr))
+        .collect();
+
+    if candidates.is_empty() {
+        return;
+    }
+
+    candidates.sort_unstable_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
     let mut cumulative = 0.0f32;
-    let mut cutoff = order.len();
-    for (rank, &idx) in order.iter().enumerate() {
-        cumulative += probs[idx];
+    let mut cutoff = candidates.len();
+    for (rank, &(_, pr)) in candidates.iter().enumerate() {
+        cumulative += pr;
         if cumulative >= p {
-            // Keep the token that crossed the threshold.
+            // Keep the token that crossed the threshold, so the retained mass
+            // is always at least `p` and the set is never empty.
             cutoff = rank + 1;
             break;
         }
     }
 
-    for &idx in &order[cutoff..] {
+    for &(idx, _) in &candidates[cutoff..] {
         logits[idx] = MASKED;
     }
 }
@@ -137,19 +151,34 @@ pub fn apply_top_p(logits: &mut [f32], p: f32) {
 ///
 /// Subtracts the maximum before exponentiating; without that, a logit of 100
 /// overflows `f32::exp` to infinity and the whole distribution becomes `NaN`.
+///
+/// Masked entries are skipped rather than exponentiated. After top-k over a
+/// 128k vocabulary, all but `k` entries are at [`MASKED`], and `exp` on them
+/// costs a transcendental call to produce a number that underflows to zero
+/// anyway. Skipping them was the single largest cost in the decode-step
+/// sampler — see `docs/performance-journal.md`.
 pub fn softmax(logits: &[f32]) -> Vec<f32> {
     let max = logits
         .iter()
         .copied()
         .fold(f32::NEG_INFINITY, |a, b| if b > a { b } else { a });
-    if !max.is_finite() {
+    if !max.is_finite() || max <= MASKED {
         // Every logit was masked or non-finite. Fall back to uniform rather
         // than producing NaN.
         return vec![1.0 / logits.len() as f32; logits.len()];
     }
 
-    let mut out: Vec<f32> = logits.iter().map(|&l| (l - max).exp()).collect();
-    let sum: f32 = out.iter().sum();
+    let mut out = vec![0.0f32; logits.len()];
+    let mut sum = 0.0f32;
+    for (o, &l) in out.iter_mut().zip(logits.iter()) {
+        if l <= MASKED {
+            continue; // already zero
+        }
+        let e = (l - max).exp();
+        *o = e;
+        sum += e;
+    }
+
     if sum > 0.0 {
         for v in out.iter_mut() {
             *v /= sum;
