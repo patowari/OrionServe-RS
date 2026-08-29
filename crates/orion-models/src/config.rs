@@ -198,7 +198,7 @@ impl HfConfig {
         if num_kv_heads == 0 {
             return Err(malformed("num_key_value_heads must be non-zero".into()));
         }
-        if self.num_attention_heads % num_kv_heads != 0 {
+        if !self.num_attention_heads.is_multiple_of(num_kv_heads) {
             return Err(malformed(format!(
                 "num_attention_heads ({}) must be a multiple of num_key_value_heads ({num_kv_heads})",
                 self.num_attention_heads

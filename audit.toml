@@ -1,0 +1,23 @@
+# cargo-audit configuration.
+#
+# The policy is: any actual security advisory fails the build. Unmaintained
+# crates are reported but do not fail, because they are usually transitive and
+# unfixable from here -- failing on them would train people to ignore the
+# audit, which is worse than the risk being flagged.
+
+[advisories]
+# Advisories that are known, reviewed, and accepted. Every entry needs a
+# reason; an unexplained ignore is indistinguishable from carelessness.
+ignore = [
+    # RUSTSEC-2024-0436: `paste` is unmaintained.
+    #
+    # Not a vulnerability -- it is a compile-time-only proc macro with no
+    # runtime presence, reached transitively through `tokenizers`. There is no
+    # exploitable surface, and nothing to upgrade to until `tokenizers` moves
+    # off it. Revisit when that happens.
+    "RUSTSEC-2024-0436",
+]
+
+# Unmaintained, unsound and notice advisories are reported as warnings.
+# Genuine vulnerabilities are not in this list, so they still fail the run.
+informational_warnings = ["unmaintained", "unsound", "notice"]

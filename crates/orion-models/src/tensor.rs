@@ -226,7 +226,7 @@ pub struct RopeTable {
 impl RopeTable {
     /// Builds tables for `max_positions` positions.
     pub fn new(head_dim: usize, max_positions: usize, theta: f32) -> Result<Self, EngineError> {
-        if head_dim % 2 != 0 {
+        if !head_dim.is_multiple_of(2) {
             return Err(EngineError::Internal(format!(
                 "RoPE requires an even head_dim, got {head_dim}"
             )));

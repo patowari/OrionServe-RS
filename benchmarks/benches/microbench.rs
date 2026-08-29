@@ -13,10 +13,11 @@
 //! What they are *not*: an inference benchmark. Tokens per second is a
 //! whole-system property measured by `orion-bench` against a running server.
 
-use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
+use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use orion_core::{SamplingParams, SchedulerConfig, Sequence, TokenId};
 use orion_kv_cache::{hash_block, KvCacheManager};
 use orion_scheduler::Scheduler;
+use std::hint::black_box;
 
 /// Block allocation and release, the KV cache hot path.
 fn bench_block_allocation(c: &mut Criterion) {
@@ -141,11 +142,9 @@ fn bench_scheduler(c: &mut Criterion) {
                             );
                             sched.add_request(seq).unwrap();
                         }
+                        // One pass to prefill everything, so the measured pass
+                        // below is a pure decode step.
                         sched.schedule();
-                        let ids: Vec<_> = (0..n)
-                            .filter_map(|_| None::<orion_core::SequenceId>)
-                            .collect();
-                        let _ = ids;
                         sched
                     },
                     |mut sched| {

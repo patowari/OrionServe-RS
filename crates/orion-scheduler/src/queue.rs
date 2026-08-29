@@ -18,7 +18,7 @@ use orion_core::{Sequence, SequenceId};
 /// already waited once and already consumed prefill compute, so sending it to
 /// the back would let a steady arrival stream starve it indefinitely while
 /// repeatedly throwing away its work. This is the queue's single most important
-/// property, and [`tests::preempted_sequences_regain_priority`] pins it.
+/// property, and the `preempted_sequences_regain_priority` test pins it.
 #[derive(Debug, Default)]
 pub struct WaitingQueue {
     inner: VecDeque<Sequence>,

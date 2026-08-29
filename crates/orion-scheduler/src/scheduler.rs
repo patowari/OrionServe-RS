@@ -20,7 +20,7 @@
 //!
 //! # Why the scheduler owns no cache memory
 //!
-//! The scheduler asks [`KvCacheManager`] whether a sequence fits and tells it
+//! The scheduler asks the cache manager whether a sequence fits and tells it
 //! when to allocate or free, but never touches blocks itself. That separation
 //! is what lets every policy decision here be tested with a real cache manager
 //! and no GPU: the tests in this module run the genuine allocation path.
@@ -114,7 +114,7 @@ impl SchedulerStats {
 /// Continuous batching scheduler.
 ///
 /// Generic over the cache so scheduling policy can be tested against both the
-/// real [`KvCacheManager`](orion_kv_cache::KvCacheManager) and a purpose-built
+/// real `KvCacheManager` and a purpose-built
 /// fake that simulates exhaustion on demand.
 #[derive(Debug)]
 pub struct Scheduler<C: KvCacheManagerLike> {

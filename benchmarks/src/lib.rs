@@ -99,12 +99,9 @@ fn run_tool(cmd: &str, args: &[&str]) -> Option<String> {
 }
 
 fn detect_gpu() -> Option<String> {
-    run_tool(
-        "nvidia-smi",
-        &["--query-gpu=name", "--format=csv,noheader"],
-    )
-    .map(|s| s.lines().next().unwrap_or_default().trim().to_string())
-    .filter(|s| !s.is_empty())
+    run_tool("nvidia-smi", &["--query-gpu=name", "--format=csv,noheader"])
+        .map(|s| s.lines().next().unwrap_or_default().trim().to_string())
+        .filter(|s| !s.is_empty())
 }
 
 fn detect_driver() -> Option<String> {
@@ -383,9 +380,7 @@ impl BenchmarkResult {
         ));
         match &self.metadata.gpu {
             Some(gpu) => out.push_str(&format!("GPU:             {gpu}\n")),
-            None => out.push_str(
-                "GPU:             none detected - THIS IS A CPU-ONLY RESULT\n",
-            ),
+            None => out.push_str("GPU:             none detected - THIS IS A CPU-ONLY RESULT\n"),
         }
         out.push_str(&format!("model:           {}\n", self.metadata.model));
         out.push_str(&format!("precision:       {}\n", self.metadata.precision));
@@ -419,11 +414,7 @@ impl BenchmarkResult {
 }
 
 /// Measures one request's timings from a stream of token arrival instants.
-pub fn measure(
-    start: Instant,
-    token_times: &[Instant],
-    prompt_tokens: usize,
-) -> RequestSample {
+pub fn measure(start: Instant, token_times: &[Instant], prompt_tokens: usize) -> RequestSample {
     let end = token_times.last().copied().unwrap_or(start);
     RequestSample {
         ttft: token_times.first().map(|t| *t - start),
@@ -573,8 +564,12 @@ mod tests {
         let names: std::collections::HashSet<_> = shapes.iter().map(|s| s.as_str()).collect();
         assert_eq!(names.len(), 4, "shape names must be distinct");
 
-        assert!(WorkloadShape::LongShort.prompt_tokens() > WorkloadShape::ShortShort.prompt_tokens());
-        assert!(WorkloadShape::ShortLong.output_tokens() > WorkloadShape::ShortShort.output_tokens());
+        assert!(
+            WorkloadShape::LongShort.prompt_tokens() > WorkloadShape::ShortShort.prompt_tokens()
+        );
+        assert!(
+            WorkloadShape::ShortLong.output_tokens() > WorkloadShape::ShortShort.output_tokens()
+        );
     }
 
     #[test]

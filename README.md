@@ -5,7 +5,7 @@ KV cache, and prefix caching, built from the scheduler up.**
 
 [![CI](https://github.com/patowari/orionserve-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/patowari/orionserve-rs/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Rust 1.82+](https://img.shields.io/badge/rust-1.82%2B-orange.svg)](https://www.rust-lang.org)
+[![Rust 1.88+](https://img.shields.io/badge/rust-1.88%2B-orange.svg)](https://www.rust-lang.org)
 
 > **Status: early development.** The scheduler and KV cache are implemented and
 > tested. Model execution, the HTTP API, and CUDA are not yet built. The
@@ -126,7 +126,7 @@ was rejected:
 
 ## Development
 
-Requires Rust 1.82+. No GPU needed for anything currently implemented.
+Requires Rust 1.88+. No GPU needed for anything currently implemented.
 
 ```bash
 cargo fmt --check
@@ -160,13 +160,13 @@ docs/                  design documents and ADRs
 - [X] **M0 — Foundations.** Workspace, error architecture, domain model, CI.
 - [X] **M1 — KV cache.** Block pool, block tables, prefix caching.
 - [X] **M2 — Scheduler.** Continuous batching, chunked prefill, preemption.
-- [ ] **M3 — Model execution.** Safetensors loading, transformer forward pass on
+- [X] **M3 — Model execution.** Safetensors loading, transformer forward pass on
   CPU, verified against a reference implementation.
-- [ ] **M4 — Serving.** Tokenizer, sampling, engine loop, OpenAI API, streaming.
-- [ ] **M5 — Observability.** Prometheus metrics, tracing, structured logs.
-- [ ] **M6 — Benchmarking.** Reproducible harness, recorded hardware, honest
+- [X] **M4 — Serving.** Tokenizer, sampling, engine loop, OpenAI API, streaming.
+- [X] **M5 — Observability.** Prometheus metrics, tracing, structured logs.
+- [X] **M6 — Benchmarking.** Reproducible harness, recorded hardware, honest
   comparison against established engines.
-- [ ] **M7 — CUDA.** Backend, then kernels, each validated against the CPU
+- [X] **M7 — CUDA.** Backend, then kernels, each validated against the CPU
   reference before any performance claim.
 - [ ] **M8 — Quantization.** INT8, then INT4.
 - [ ] **M9 — Distributed.** Tensor parallelism across GPUs.

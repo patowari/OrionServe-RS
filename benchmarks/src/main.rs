@@ -15,9 +15,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use clap::Parser;
-use orion_bench::{
-    aggregate, BenchmarkResult, RequestSample, RunMetadata, WorkloadShape,
-};
+use orion_bench::{aggregate, BenchmarkResult, RequestSample, RunMetadata, WorkloadShape};
 
 #[derive(Parser, Debug)]
 #[command(name = "orion-bench", about = "Load generator for OrionServe-RS")]
@@ -102,20 +100,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     for shape in shapes {
         for &concurrency in &args.concurrency {
-            eprintln!(
-                "running {} at concurrency {concurrency}...",
-                shape.as_str()
-            );
+            eprintln!("running {} at concurrency {concurrency}...", shape.as_str());
 
             // Warm-up, discarded.
             if args.warmup > 0 {
-                run_batch(&client, &args, shape, concurrency.min(args.warmup), args.warmup)
-                    .await;
+                run_batch(
+                    &client,
+                    &args,
+                    shape,
+                    concurrency.min(args.warmup),
+                    args.warmup,
+                )
+                .await;
             }
 
             let start = Instant::now();
-            let samples =
-                run_batch(&client, &args, shape, concurrency, args.requests).await;
+            let samples = run_batch(&client, &args, shape, concurrency, args.requests).await;
             let elapsed = start.elapsed();
 
             let result = aggregate(
