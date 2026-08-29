@@ -10,6 +10,7 @@ pub mod attention;
 pub mod backend;
 pub mod config;
 pub mod loader;
+pub mod quantization;
 pub mod tensor;
 pub mod transformer;
 
@@ -17,5 +18,6 @@ pub use attention::{paged_attention, AttentionArgs, KvStore};
 pub use backend::CpuBackend;
 pub use config::{Architecture, HfConfig};
 pub use loader::CheckpointLoader;
+pub use quantization::{dequantize, quantize, QuantBits, QuantizedTensor};
 pub use tensor::{Matrix, RopeTable};
 pub use transformer::{LayerWeights, ModelWeights, TransformerModel};

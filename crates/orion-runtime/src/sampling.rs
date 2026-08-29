@@ -105,7 +105,7 @@ pub fn apply_top_k(logits: &mut [f32], k: usize) {
 /// at least `p` and the candidate set is never empty.
 ///
 /// Only *unmasked* entries are collected and sorted. After top-k over a 128k
-/// vocabulary the vast majority of entries are at [`MASKED`] and contribute
+/// vocabulary the vast majority of entries are masked and contribute
 /// exactly zero probability, so they can never be inside the nucleus; sorting
 /// them was measurable waste. See `docs/performance-journal.md`.
 pub fn apply_top_p(logits: &mut [f32], p: f32) {
@@ -153,7 +153,7 @@ pub fn apply_top_p(logits: &mut [f32], p: f32) {
 /// overflows `f32::exp` to infinity and the whole distribution becomes `NaN`.
 ///
 /// Masked entries are skipped rather than exponentiated. After top-k over a
-/// 128k vocabulary, all but `k` entries are at [`MASKED`], and `exp` on them
+/// 128k vocabulary, all but `k` entries are masked, and `exp` on them
 /// costs a transcendental call to produce a number that underflows to zero
 /// anyway. Skipping them was the single largest cost in the decode-step
 /// sampler — see `docs/performance-journal.md`.

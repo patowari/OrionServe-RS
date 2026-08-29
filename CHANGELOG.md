@@ -18,6 +18,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `orion-kv-cache`: reference-counted paged block pool with FIFO reclamation
   doubling as LRU; per-sequence block tables; chained-hash prefix caching with
   token-equality verification on lookup; failure-atomic allocation.
+- `orion-models`: INT8/INT4 group-wise asymmetric quantization with honest
+  compression ratios (metadata included) and scale-invariant error measurement.
+  The quantized *matmul* is not implemented; only the numerics are.
+- `orion-cuda`: kernel-validation harness (tolerance model, mismatch reporting)
+  implemented and tested with no GPU, plus RMSNorm, RoPE and fused SwiGLU
+  kernels in `kernels/cuda/`. **None of the CUDA code has been compiled or
+  run** -- no toolkit and no device were available.
+- `orion-distributed`: tensor-parallel partitioning calculus -- rank
+  validation, dimension sharding, per-rank KV cache accounting, communication
+  volume estimation -- with a single-rank collective implementation. Multi-GPU
+  execution is not implemented.
+- `benchmarks`: load generator measuring TTFT, TPOT, latency percentiles and
+  throughput against a running server, plus criterion microbenchmarks. Records
+  hardware with every result and labels CPU-only runs explicitly.
 - `orion-models`: HF `config.json` normalization across architectures,
   memory-mapped safetensors loading, CPU tensor primitives (RMSNorm, RoPE,
   SwiGLU, linear), paged attention that gathers K/V through a block table, and
@@ -59,6 +73,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - KV cache: eviction stopped at the first uncached free block instead of
   skipping it, so a cached block behind it could never be evicted.
 
+### Performance
+
+- Sampling: top-k/top-p at a 128k vocabulary went from 9.78 ms to 0.96 ms per
+  token, a 10.2x speedup, by not sorting and not exponentiating entries a
+  previous filter had already masked. Measured, with before/after numbers and
+  the machine, in `docs/performance-journal.md`.
+
 ### Fixed (continued)
 
 - Tokenizer: `IncrementalDecoder::finish` required the full decode to start
@@ -68,7 +89,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Tokenizer: window re-anchoring reset the emitted-byte offset to zero instead
   of rebasing it, duplicating the retained tail ("helllo wworlld").
 
+- Quantization: the range scan used `f32::min`/`f32::max`, which return the
+  *other* operand when one side is NaN, so a non-finite weight passed straight
+  through and was encoded as a plausible-looking integer. Now checked per
+  element before the fold.
+- Benchmarks: `append_token` grew one sequence unboundedly until the block pool
+  was exhausted, measuring the failure path rather than the steady state.
+- CI: the declared MSRV of 1.82 was wrong -- transitive dependencies require
+  1.88. Verified by building under 1.82, 1.85 and 1.88.
+- CI: two broken intra-doc links, and a security-audit job that failed on an
+  unmaintained transitive proc-macro rather than on actual vulnerabilities.
+
 ### Not yet implemented
 
-CUDA, quantization and distributed inference are `planned`. No benchmarks have
-been run and no performance claims are made.
+Executing CUDA kernels, quantized matrix multiplication, and multi-GPU
+inference. No GPU has been available to this project, so no GPU benchmark
+exists and no acceleration is claimed.

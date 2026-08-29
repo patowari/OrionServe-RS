@@ -11,3 +11,9 @@ authors.workspace = true
 [dependencies]
 orion-core = { workspace = true }
 tracing = { workspace = true }
+
+[features]
+default = []
+# Enables the CUDA backend. Requires a CUDA toolkit and an NVIDIA GPU.
+# NOT VERIFIED: this feature has never been built or run.
+cuda = []

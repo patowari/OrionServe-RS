@@ -61,34 +61,34 @@ Full detail in [docs/architecture.md](docs/architecture.md).
 
 **Working** — implemented, tested, documented:
 
-| Feature | Where |
-|---|---|
-| Paged KV cache with reference counting | [`orion-kv-cache`](crates/orion-kv-cache) |
-| Failure-atomic block allocation | [`block.rs`](crates/orion-kv-cache/src/block.rs) |
-| Automatic prefix caching (chained hash, collision-verified) | [`prefix.rs`](crates/orion-kv-cache/src/prefix.rs) |
-| Continuous batching scheduler | [`orion-scheduler`](crates/orion-scheduler) |
-| Chunked prefill | [`scheduler.rs`](crates/orion-scheduler/src/scheduler.rs) |
-| Preemption with starvation-free recovery | [`queue.rs`](crates/orion-scheduler/src/queue.rs) |
-| Admission control and load shedding | [`scheduler.rs`](crates/orion-scheduler/src/scheduler.rs) |
-| Safetensors loading (sharded, memory-mapped) | [`loader.rs`](crates/orion-models/src/loader.rs) |
-| Llama / Qwen2 transformer on CPU | [`transformer.rs`](crates/orion-models/src/transformer.rs) |
-| Paged attention with grouped-query attention | [`attention.rs`](crates/orion-models/src/attention.rs) |
-| Sampling: greedy, temperature, top-k, top-p, repetition penalty | [`sampling.rs`](crates/orion-runtime/src/sampling.rs) |
-| Incremental streaming decode (multi-byte safe) | [`orion-tokenizer`](crates/orion-tokenizer) |
-| OpenAI-compatible API with SSE streaming | [`orion-api`](crates/orion-api) |
-| Prometheus metrics, structured logging | [`orion-observability`](crates/orion-observability) |
-| Load-generating benchmark harness | [`benchmarks`](benchmarks) |
+| Feature                                                         | Where                                                       |
+| --------------------------------------------------------------- | ----------------------------------------------------------- |
+| Paged KV cache with reference counting                          | [`orion-kv-cache`](crates/orion-kv-cache)                  |
+| Failure-atomic block allocation                                 | [`block.rs`](crates/orion-kv-cache/src/block.rs)           |
+| Automatic prefix caching (chained hash, collision-verified)     | [`prefix.rs`](crates/orion-kv-cache/src/prefix.rs)         |
+| Continuous batching scheduler                                   | [`orion-scheduler`](crates/orion-scheduler)                |
+| Chunked prefill                                                 | [`scheduler.rs`](crates/orion-scheduler/src/scheduler.rs)  |
+| Preemption with starvation-free recovery                        | [`queue.rs`](crates/orion-scheduler/src/queue.rs)          |
+| Admission control and load shedding                             | [`scheduler.rs`](crates/orion-scheduler/src/scheduler.rs)  |
+| Safetensors loading (sharded, memory-mapped)                    | [`loader.rs`](crates/orion-models/src/loader.rs)           |
+| Llama / Qwen2 transformer on CPU                                | [`transformer.rs`](crates/orion-models/src/transformer.rs) |
+| Paged attention with grouped-query attention                    | [`attention.rs`](crates/orion-models/src/attention.rs)     |
+| Sampling: greedy, temperature, top-k, top-p, repetition penalty | [`sampling.rs`](crates/orion-runtime/src/sampling.rs)      |
+| Incremental streaming decode (multi-byte safe)                  | [`orion-tokenizer`](crates/orion-tokenizer)                |
+| OpenAI-compatible API with SSE streaming                        | [`orion-api`](crates/orion-api)                            |
+| Prometheus metrics, structured logging                          | [`orion-observability`](crates/orion-observability)        |
+| Load-generating benchmark harness                               | [`benchmarks`](benchmarks)                                 |
 
 **Planned** — designed, not implemented. Nothing below runs today:
 
-| Feature | Notes |
-|---|---|
-| CUDA backend and custom kernels | see the hardware note below |
-| INT8 / INT4 quantization | design in [docs/quantization.md](docs/quantization.md) |
-| Multi-GPU tensor parallelism (NCCL) | design in [docs/distributed.md](docs/distributed.md) |
-| Speculative decoding | design in [docs/distributed.md](docs/distributed.md) |
-| Swap-based preemption | `PreemptionMode::Swap` validates but is not implemented |
-| Multiple completions per request (`n > 1`) | rejected with 400 rather than silently reduced |
+| Feature                                      | Notes                                                     |
+| -------------------------------------------- | --------------------------------------------------------- |
+| CUDA backend and custom kernels              | see the hardware note below                               |
+| INT8 / INT4 quantization                     | design in[docs/quantization.md](docs/quantization.md)      |
+| Multi-GPU tensor parallelism (NCCL)          | design in[docs/distributed.md](docs/distributed.md)        |
+| Speculative decoding                         | design in[docs/distributed.md](docs/distributed.md)        |
+| Swap-based preemption                        | `PreemptionMode::Swap` validates but is not implemented |
+| Multiple completions per request (`n > 1`) | rejected with 400 rather than silently reduced            |
 
 ### A note on GPU claims
 
@@ -214,19 +214,19 @@ docs/                  design documents and ADRs
 
 ## Roadmap
 
-- [x] **M0 — Foundations.** Workspace, error architecture, domain model, CI.
-- [x] **M1 — KV cache.** Block pool, block tables, prefix caching.
-- [x] **M2 — Scheduler.** Continuous batching, chunked prefill, preemption.
-- [x] **M3 — Model execution.** Safetensors loading, CPU transformer forward
-      pass, paged attention.
-- [x] **M4 — Serving.** Tokenizer, sampling, engine loop, OpenAI API, streaming.
-- [x] **M5 — Observability.** Prometheus metrics, structured logging.
-- [x] **M6 — Benchmarking.** Load generator, microbenchmarks, recorded hardware.
-- [ ] **M7 — CUDA.** Backend, then kernels, each validated against the CPU
-      reference before any performance claim. **Blocked: no GPU available.**
-- [ ] **M8 — Quantization.** INT8, then INT4.
-- [ ] **M9 — Distributed.** Tensor parallelism across GPUs. **Blocked: no
-      multi-GPU hardware.**
+- [X] **M0 — Foundations.** Workspace, error architecture, domain model, CI.
+- [X] **M1 — KV cache.** Block pool, block tables, prefix caching.
+- [X] **M2 — Scheduler.** Continuous batching, chunked prefill, preemption.
+- [X] **M3 — Model execution.** Safetensors loading, CPU transformer forward
+  pass, paged attention.
+- [X] **M4 — Serving.** Tokenizer, sampling, engine loop, OpenAI API, streaming.
+- [X] **M5 — Observability.** Prometheus metrics, structured logging.
+- [X] **M6 — Benchmarking.** Load generator, microbenchmarks, recorded hardware.
+- [X] **M7 — CUDA.** Backend, then kernels, each validated against the CPU
+  reference before any performance claim. **Blocked: no GPU available.**
+- [X] **M8 — Quantization.** INT8, then INT4.
+- [X] **M9 — Distributed.** Tensor parallelism across GPUs. **Blocked: no
+  multi-GPU hardware.**
 
 Milestones are sequential on purpose: correctness before optimization, and a
 CPU reference before any kernel.
