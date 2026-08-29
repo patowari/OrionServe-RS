@@ -328,6 +328,39 @@ pub trait Sampler: Send + Sync {
     ) -> Result<TokenId, EngineError>;
 }
 
+/// The KV cache operations the scheduler depends on.
+///
+/// This trait exists so scheduling policy can be tested against a fake that
+/// forces allocation failures on demand, without contorting a real cache into
+/// the exact block arithmetic that triggers exhaustion. `orion-core` defines it
+/// rather than `orion-kv-cache` so the scheduler can depend on the behaviour
+/// without depending on the implementation.
+pub trait KvCacheManagerLike: std::fmt::Debug {
+    /// Blocks required to hold `num_tokens`, ignoring any reuse.
+    fn blocks_needed_for(&self, num_tokens: usize) -> usize;
+
+    /// Total blocks in the pool.
+    fn total_blocks(&self) -> usize;
+
+    /// Blocks currently unreferenced.
+    fn free_blocks(&self) -> usize;
+
+    /// Whether `num_tokens` could be admitted right now.
+    fn can_allocate(&self, num_tokens: usize) -> bool;
+
+    /// Reserves blocks covering a sequence's prompt.
+    fn allocate(&mut self, seq: SequenceId, prompt: &[TokenId]) -> Result<(), EngineError>;
+
+    /// Reserves room for one more token on a running sequence.
+    fn append_token(&mut self, seq: SequenceId) -> Result<(), EngineError>;
+
+    /// Releases every block held by a sequence. Idempotent.
+    fn free(&mut self, seq: SequenceId);
+
+    /// Publishes a finished prefill to the prefix cache, if enabled.
+    fn commit_prefill(&mut self, seq: SequenceId, prompt: &[TokenId]);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

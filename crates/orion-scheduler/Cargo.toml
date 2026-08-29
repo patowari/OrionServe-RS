@@ -13,3 +13,6 @@ orion-core = { workspace = true }
 orion-kv-cache = { workspace = true }
 tracing = { workspace = true }
 metrics = { workspace = true }
+
+[dev-dependencies]
+orion-kv-cache = { workspace = true }

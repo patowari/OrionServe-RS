@@ -32,5 +32,6 @@ pub use id::{BlockId, RequestId, SequenceId, TokenId};
 pub use sampling::{SamplingMode, SamplingParams};
 pub use sequence::{FinishReason, Sequence, SequenceState, SequenceTimings};
 pub use traits::{
-    Backend, DType, Device, ForwardBatch, ForwardOutput, LanguageModel, ModelMetadata, Sampler,
+    Backend, DType, Device, ForwardBatch, ForwardOutput, KvCacheManagerLike, LanguageModel,
+    ModelMetadata, Sampler,
 };

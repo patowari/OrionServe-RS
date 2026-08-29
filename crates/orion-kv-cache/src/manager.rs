@@ -424,6 +424,45 @@ impl KvCacheManager {
     }
 }
 
+/// Bridges the concrete manager to the scheduler-facing trait.
+///
+/// The trait deliberately drops the [`AllocationOutcome`] detail: the scheduler
+/// only needs to know whether allocation succeeded, while prefix-cache
+/// statistics are read separately through [`KvCacheManager::stats`].
+impl orion_core::KvCacheManagerLike for KvCacheManager {
+    fn blocks_needed_for(&self, num_tokens: usize) -> usize {
+        KvCacheManager::blocks_needed_for(self, num_tokens)
+    }
+
+    fn total_blocks(&self) -> usize {
+        KvCacheManager::total_blocks(self)
+    }
+
+    fn free_blocks(&self) -> usize {
+        KvCacheManager::free_blocks(self)
+    }
+
+    fn can_allocate(&self, num_tokens: usize) -> bool {
+        KvCacheManager::can_allocate(self, num_tokens)
+    }
+
+    fn allocate(&mut self, seq: SequenceId, prompt: &[TokenId]) -> Result<(), EngineError> {
+        KvCacheManager::allocate(self, seq, prompt).map(|_| ())
+    }
+
+    fn append_token(&mut self, seq: SequenceId) -> Result<(), EngineError> {
+        KvCacheManager::append_token(self, seq)
+    }
+
+    fn free(&mut self, seq: SequenceId) {
+        KvCacheManager::free(self, seq)
+    }
+
+    fn commit_prefill(&mut self, seq: SequenceId, prompt: &[TokenId]) {
+        KvCacheManager::commit_prefill(self, seq, prompt)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
