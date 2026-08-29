@@ -18,6 +18,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `orion-kv-cache`: reference-counted paged block pool with FIFO reclamation
   doubling as LRU; per-sequence block tables; chained-hash prefix caching with
   token-equality verification on lookup; failure-atomic allocation.
+- `orion-runtime`: sampling engine — sign-aware repetition penalty, temperature,
+  top-k via O(n) selection, nucleus (top-p) filtering, numerically stable
+  softmax, and per-request seeded RNG so a seeded request is reproducible
+  regardless of concurrent load.
 - `orion-scheduler`: continuous batching; chunked prefill; preemption by
   recompute with front-of-queue recovery; admission control; per-step timeout
   expiry; `FakeCache` test double for forcing allocation failures.

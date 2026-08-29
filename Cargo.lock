@@ -1153,6 +1153,8 @@ dependencies = [
  "orion-models",
  "orion-scheduler",
  "orion-tokenizer",
+ "rand 0.10.2",
+ "rand_chacha 0.10.0",
  "tokio",
  "tracing",
 ]
