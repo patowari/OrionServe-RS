@@ -1,0 +1,34 @@
+[package]
+name = "orion-bench"
+description = "Benchmark harness and load generator for OrionServe-RS."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[[bin]]
+name = "orion-bench"
+path = "src/main.rs"
+
+[dependencies]
+orion-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+reqwest = { workspace = true }
+clap = { workspace = true }
+futures = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
+orion-kv-cache = { workspace = true }
+orion-scheduler = { workspace = true }
+orion-runtime = { workspace = true }
+orion-models = { workspace = true }
+
+[[bench]]
+name = "microbench"
+harness = false

@@ -12,6 +12,7 @@ members = [
     "crates/orion-distributed",
     "crates/orion-cuda",
     "crates/orion-cli",
+    "benchmarks",
 ]
 
 [workspace.package]
@@ -78,7 +79,7 @@ num_cpus = "1.17.0"
 # Dev / test
 criterion = { version = "0.8.2", features = ["html_reports"] }
 proptest = "1.11.0"
-reqwest = { version = "0.13.4", default-features = false, features = ["json", "stream", "rustls-tls"] }
+reqwest = { version = "0.13.4", default-features = false, features = ["json", "stream", "rustls"] }
 
 [profile.release]
 opt-level = 3

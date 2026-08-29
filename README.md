@@ -23,11 +23,9 @@ about three problems that have little to do with the model itself:
    reads every weight in the model to do a handful of matrix-vector products.
    A GPU serving one request is nearly idle. Batching is what makes the
    hardware worth its price.
-
 2. **Requests are wildly heterogeneous.** Prompts span tens to tens of
    thousands of tokens. Output length is unknown until the model stops. Any
    scheme assuming uniformity wastes most of what it batches.
-
 3. **KV cache dominates memory and cannot be sized in advance.** Llama-3-8B in
    FP16 costs 128 KiB of cache *per token*. One 8192-token sequence needs a
    gigabyte. Reserving each request's worst case leaves a GPU serving a
@@ -61,37 +59,37 @@ Full detail in [docs/architecture.md](docs/architecture.md).
 
 **Stable** — implemented, tested, and documented:
 
-| Feature | Where |
-|---|---|
-| Paged KV cache with reference counting | [`orion-kv-cache`](crates/orion-kv-cache) |
-| Failure-atomic block allocation | [`block.rs`](crates/orion-kv-cache/src/block.rs) |
-| Automatic prefix caching (chained hash, collision-verified) | [`prefix.rs`](crates/orion-kv-cache/src/prefix.rs) |
-| Continuous batching scheduler | [`orion-scheduler`](crates/orion-scheduler) |
-| Chunked prefill | [`scheduler.rs`](crates/orion-scheduler/src/scheduler.rs) |
-| Preemption with starvation-free recovery | [`queue.rs`](crates/orion-scheduler/src/queue.rs) |
-| Admission control and load shedding | [`scheduler.rs`](crates/orion-scheduler/src/scheduler.rs) |
-| Sequence lifecycle state machine | [`orion-core`](crates/orion-core) |
-| Validated configuration and sampling parameters | [`orion-core`](crates/orion-core) |
+| Feature                                                     | Where                                                      |
+| ----------------------------------------------------------- | ---------------------------------------------------------- |
+| Paged KV cache with reference counting                      | [`orion-kv-cache`](crates/orion-kv-cache)                 |
+| Failure-atomic block allocation                             | [`block.rs`](crates/orion-kv-cache/src/block.rs)          |
+| Automatic prefix caching (chained hash, collision-verified) | [`prefix.rs`](crates/orion-kv-cache/src/prefix.rs)        |
+| Continuous batching scheduler                               | [`orion-scheduler`](crates/orion-scheduler)               |
+| Chunked prefill                                             | [`scheduler.rs`](crates/orion-scheduler/src/scheduler.rs) |
+| Preemption with starvation-free recovery                    | [`queue.rs`](crates/orion-scheduler/src/queue.rs)         |
+| Admission control and load shedding                         | [`scheduler.rs`](crates/orion-scheduler/src/scheduler.rs) |
+| Sequence lifecycle state machine                            | [`orion-core`](crates/orion-core)                         |
+| Validated configuration and sampling parameters             | [`orion-core`](crates/orion-core)                         |
 
 **In progress** — partially built:
 
-| Feature | Notes |
-|---|---|
-| Model loading (safetensors + config.json) | crate scaffolded, loader not written |
-| Sampling engine | parameters and validation done; samplers not written |
+| Feature                                   | Notes                                                |
+| ----------------------------------------- | ---------------------------------------------------- |
+| Model loading (safetensors + config.json) | crate scaffolded, loader not written                 |
+| Sampling engine                           | parameters and validation done; samplers not written |
 
 **Planned** — designed, not implemented. Nothing below currently runs:
 
-| Feature | Notes |
-|---|---|
-| Transformer execution (RMSNorm, RoPE, GQA, SwiGLU) | design in [inference-runtime.md](docs/inference-runtime.md) |
-| Tokenizer integration and streaming decode | — |
-| OpenAI-compatible HTTP API with SSE streaming | — |
-| Prometheus metrics and OpenTelemetry tracing | metric names listed in [docs/](docs/) |
-| CUDA backend and custom kernels | see note on hardware below |
-| INT8 / INT4 quantization | — |
-| Multi-GPU tensor parallelism (NCCL) | — |
-| Speculative decoding | — |
+| Feature                                            | Notes                                                     |
+| -------------------------------------------------- | --------------------------------------------------------- |
+| Transformer execution (RMSNorm, RoPE, GQA, SwiGLU) | design in[inference-runtime.md](docs/inference-runtime.md) |
+| Tokenizer integration and streaming decode         | —                                                        |
+| OpenAI-compatible HTTP API with SSE streaming      | —                                                        |
+| Prometheus metrics and OpenTelemetry tracing       | metric names listed in[docs/](docs/)                       |
+| CUDA backend and custom kernels                    | see note on hardware below                                |
+| INT8 / INT4 quantization                           | —                                                        |
+| Multi-GPU tensor parallelism (NCCL)                | —                                                        |
+| Speculative decoding                               | —                                                        |
 
 ### A note on GPU claims
 
@@ -159,17 +157,17 @@ docs/                  design documents and ADRs
 
 ## Roadmap
 
-- [x] **M0 — Foundations.** Workspace, error architecture, domain model, CI.
-- [x] **M1 — KV cache.** Block pool, block tables, prefix caching.
-- [x] **M2 — Scheduler.** Continuous batching, chunked prefill, preemption.
+- [X] **M0 — Foundations.** Workspace, error architecture, domain model, CI.
+- [X] **M1 — KV cache.** Block pool, block tables, prefix caching.
+- [X] **M2 — Scheduler.** Continuous batching, chunked prefill, preemption.
 - [ ] **M3 — Model execution.** Safetensors loading, transformer forward pass on
-      CPU, verified against a reference implementation.
+  CPU, verified against a reference implementation.
 - [ ] **M4 — Serving.** Tokenizer, sampling, engine loop, OpenAI API, streaming.
 - [ ] **M5 — Observability.** Prometheus metrics, tracing, structured logs.
 - [ ] **M6 — Benchmarking.** Reproducible harness, recorded hardware, honest
-      comparison against established engines.
+  comparison against established engines.
 - [ ] **M7 — CUDA.** Backend, then kernels, each validated against the CPU
-      reference before any performance claim.
+  reference before any performance claim.
 - [ ] **M8 — Quantization.** INT8, then INT4.
 - [ ] **M9 — Distributed.** Tensor parallelism across GPUs.
 
