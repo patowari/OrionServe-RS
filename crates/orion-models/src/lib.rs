@@ -18,4 +18,4 @@ pub use backend::CpuBackend;
 pub use config::{Architecture, HfConfig};
 pub use loader::CheckpointLoader;
 pub use tensor::{Matrix, RopeTable};
-pub use transformer::{ModelWeights, TransformerModel};
+pub use transformer::{LayerWeights, ModelWeights, TransformerModel};

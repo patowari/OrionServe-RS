@@ -17,6 +17,11 @@ orion-core = { workspace = true }
 orion-api = { workspace = true }
 orion-observability = { workspace = true }
 orion-runtime = { workspace = true }
+orion-models = { workspace = true }
+orion-scheduler = { workspace = true }
+orion-kv-cache = { workspace = true }
+orion-tokenizer = { workspace = true }
+axum = { workspace = true }
 clap = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }

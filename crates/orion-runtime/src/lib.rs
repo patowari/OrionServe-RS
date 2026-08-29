@@ -11,6 +11,8 @@
 #![forbid(unsafe_code)]
 #![warn(missing_debug_implementations)]
 
+pub mod engine;
 pub mod sampling;
 
+pub use engine::{spawn, Engine, EngineHandle, EngineStats, GenerationRequest, StreamEvent};
 pub use sampling::DefaultSampler;

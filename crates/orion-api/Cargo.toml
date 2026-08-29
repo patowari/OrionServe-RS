@@ -12,6 +12,7 @@ authors.workspace = true
 orion-core = { workspace = true }
 orion-runtime = { workspace = true }
 orion-observability = { workspace = true }
+orion-tokenizer = { workspace = true }
 axum = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
@@ -24,3 +25,11 @@ async-stream = { workspace = true }
 uuid = { workspace = true }
 tracing = { workspace = true }
 metrics = { workspace = true }
+
+[dev-dependencies]
+orion-models = { workspace = true }
+orion-scheduler = { workspace = true }
+orion-kv-cache = { workspace = true }
+tokenizers = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "sync", "time"] }
+tower = { workspace = true, features = ["util"] }
