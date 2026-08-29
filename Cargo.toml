@@ -1,0 +1,97 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/orion-core",
+    "crates/orion-kv-cache",
+    "crates/orion-scheduler",
+    "crates/orion-tokenizer",
+    "crates/orion-models",
+    "crates/orion-runtime",
+    "crates/orion-observability",
+    "crates/orion-api",
+    "crates/orion-distributed",
+    "crates/orion-cuda",
+    "crates/orion-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.82"
+license = "Apache-2.0"
+repository = "https://github.com/patrick/orionserve-rs"
+authors = ["OrionServe-RS contributors"]
+
+[workspace.dependencies]
+# Internal crates. Path + version so the workspace can be published later.
+orion-core = { path = "crates/orion-core", version = "0.1.0" }
+orion-kv-cache = { path = "crates/orion-kv-cache", version = "0.1.0" }
+orion-scheduler = { path = "crates/orion-scheduler", version = "0.1.0" }
+orion-tokenizer = { path = "crates/orion-tokenizer", version = "0.1.0" }
+orion-models = { path = "crates/orion-models", version = "0.1.0" }
+orion-runtime = { path = "crates/orion-runtime", version = "0.1.0" }
+orion-observability = { path = "crates/orion-observability", version = "0.1.0" }
+orion-api = { path = "crates/orion-api", version = "0.1.0" }
+orion-distributed = { path = "crates/orion-distributed", version = "0.1.0" }
+orion-cuda = { path = "crates/orion-cuda", version = "0.1.0" }
+
+# Async runtime and networking
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "signal", "net"] }
+tokio-stream = "0.1.19"
+tokio-util = "0.7.19"
+futures = "0.3.34"
+async-stream = "0.3.6"
+axum = { version = "0.8.9", features = ["macros"] }
+tower = { version = "0.5.3", features = ["limit", "timeout"] }
+tower-http = { version = "0.7.0", features = ["trace", "limit", "cors"] }
+
+# Serialization
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+
+# Errors
+thiserror = "2.0.20"
+
+# Observability
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
+metrics = "0.24.6"
+metrics-exporter-prometheus = { version = "0.18.3", default-features = false }
+
+# CLI
+clap = { version = "4.6.6", features = ["derive", "env"] }
+
+# ML / model formats
+tokenizers = { version = "0.23.1", default-features = false, features = ["onig"] }
+safetensors = "0.8.0"
+half = { version = "2.7.1", features = ["num-traits"] }
+memmap2 = "0.9.11"
+
+# Utilities
+rand = "0.10.2"
+rand_chacha = "0.10.0"
+uuid = { version = "1.26.0", features = ["v4", "serde"] }
+parking_lot = "0.12.5"
+bytes = "1.12.1"
+num_cpus = "1.17.0"
+
+# Dev / test
+criterion = { version = "0.8.2", features = ["html_reports"] }
+proptest = "1.11.0"
+reqwest = { version = "0.13.4", default-features = false, features = ["json", "stream", "rustls-tls"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "unwind"
+
+# Benchmarks and profiling builds need symbols.
+[profile.bench]
+inherits = "release"
+debug = true
+
+[profile.profiling]
+inherits = "release"
+debug = true
+strip = "none"

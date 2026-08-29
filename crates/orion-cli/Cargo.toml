@@ -1,0 +1,23 @@
+[package]
+name = "orion-cli"
+description = "The `orion` command-line interface."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "orion"
+path = "src/main.rs"
+
+[dependencies]
+orion-core = { workspace = true }
+orion-api = { workspace = true }
+orion-observability = { workspace = true }
+orion-runtime = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+serde_json = { workspace = true }

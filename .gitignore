@@ -1,0 +1,13 @@
+/target
+**/*.rs.bk
+*.pdb
+
+# Model artifacts and benchmark outputs are large and machine-specific.
+/models
+/benchmarks/results/*.json
+/benchmarks/results/*.csv
+!/benchmarks/results/.gitkeep
+
+.DS_Store
+.idea/
+.vscode/

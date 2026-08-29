@@ -1,0 +1,19 @@
+[package]
+name = "orion-runtime"
+description = "Execution engine: batch execution, sampling loop and engine driver."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+orion-core = { workspace = true }
+orion-kv-cache = { workspace = true }
+orion-scheduler = { workspace = true }
+orion-models = { workspace = true }
+orion-tokenizer = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+metrics = { workspace = true }
